@@ -1,0 +1,16 @@
+#imageSrc {
+    max-height: 100px;
+    display: none;
+}
+
+#imageSrcDisplay {
+    max-height: 250px;
+    min-height: 250px;
+    border: 2px solid black
+}
+
+#sharpenCanvas {
+    border: 2px solid black;
+    height: 200px;
+    max-width: 200px;
+}

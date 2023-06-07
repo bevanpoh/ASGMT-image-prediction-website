@@ -1,0 +1,97 @@
+{% extends "layout.html" %}
+
+{% block more_css%}
+<link rel="stylesheet"
+	href="{{url_for('static', filename='styles/history.css')}}" />
+{%endblock%}
+
+{% block content %} {% with
+messages =
+get_flashed_messages(with_categories=true) %} {% if
+messages%} {% for
+category,message in messages %}
+<div class="{{ category }}">{{ message }}</div>
+{% endfor %} {% endif %} {% endwith %}
+
+<table class="table">
+	<tr>
+		<th></th>
+		{% for column in columns %}
+		<th scope="col thead-dark">
+			{{ column }} {% if column != 'Image' %}
+			<a href="{{ url_for('history', by=column, method='asc') }}"
+				title="Sort Asc">
+				<i class="fa-solid fa-arrow-up"></i></a>
+			<a href="{{ url_for('history', by=column, method='desc') }}"
+				title="Sort Desc">
+				<i class="fa-solid fa-arrow-down"></i></a>
+			{% endif %}
+		</th>
+		{% endfor %}
+	</tr>
+
+	{% for history in histories %}
+	<tr id="{{history.id}}">
+		<td>
+			<a href="{{ url_for('delete', id=history.id) }}"
+				onclick="return confirm('Do you want to permanently delete entry {{ entry }}?');"
+				title="Delete Entry">
+				<i class="fa-solid fa-trash-can"></i></a>
+		</td>
+		<td>{{history.created_on}}</td>
+		<td>
+			<img class="img-fluid tableImage"
+				src="{{url_for('static', filename='images/uploads/' + history.filepath)}}" />
+		</td>
+		<td>{{history.prediction}}</td>
+		<td>{{history.filename}}</td>
+		<td>{{history.model}}</td>
+		<td>{{history.contrast}}</td>
+		<td>{{history.sharpen}}</td>
+	</tr>
+	{% endfor %}
+</table>
+<div class="text-right" id="pageNumber">
+	<p class="d-inline">Page: </p>
+	<a
+		href="{{ url_for('history', by=current_column, method=current_method, page=1) }}">1</a>
+
+	{%if current_page > 3%}
+	<a>...</a>
+	{%endif%}
+
+	{%if current_page > 2%}
+	<a
+		href="{{ url_for('history', by=current_column, method=current_method, page=current_page - 1) }}">{{current_page
+		- 1}}</a>
+
+	{%endif%}
+
+	{% if (current_page != maximum_page) and (current_page
+	!= 1)%}
+	<a class="font-weight-bold"
+		href="{{ url_for('history', by=current_column, method=current_method, page=current_page) }}">{{current_page}}</a>
+	{% endif %}
+
+	{%if current_page < maximum_page - 1%} <a
+		href="{{ url_for('history', by=current_column, method=current_method, page=current_page+1) }}">
+		{{current_page+1}}</a>
+		{%endif%}
+
+		{%if current_page < maximum_page - 2%} <a
+			href="{{ url_for('history', by=current_column, method=current_method, page=current_page+2) }}">
+			{{current_page+2}}</a>
+			{%endif%}
+
+			{%if current_page < maximum_page - 3%} <a>
+				...</a>
+				{%endif%}
+
+
+				{% if maximum_page > 1%}
+				<a
+					href="{{ url_for('history', by=current_column, method=current_method, page=maximum_page) }}">{{maximum_page}}</a>
+				{% endif %}
+
+</div>
+{% endblock %}

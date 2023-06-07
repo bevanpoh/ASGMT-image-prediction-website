@@ -1,0 +1,15 @@
+<header class="w-100 mr-0">
+	<nav class="navbar navbar-expand-sm p-0 m-0 w-100">
+		<a class="navbar-brand mr-auto p-0 m-0" href="{{url_for('index')}}"
+			><img
+				class="img-fluid logo"
+				src="{{url_for('static', filename='images/logo.png')}}"
+		/></a>
+		{% if loggedIn %}
+		<ul class="navbar-nav">
+			<a class="nav-item nav-link mx-2 h3" href="/history">History</a>
+			<a class="nav-item nav-link mx-2 h3" href="/logout">Logout</a>
+		</ul>
+		{% endif %}
+	</nav>
+</header>

@@ -1,0 +1,17 @@
+- model prediction consistency
+
+- login codes
+
+- predict success
+- predict errors
+    - bad file input
+    - bad num values
+    - bad model
+
+- delete codes
+    - 302
+    - 307
+
+- history codes
+    - 200
+    - 404

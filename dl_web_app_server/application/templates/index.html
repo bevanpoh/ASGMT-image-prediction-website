@@ -1,0 +1,10 @@
+{% extends "layout.html" %} {% block more_css %}
+<link
+	rel="stylesheet"
+	href="{{url_for('static', filename='styles/predict.css')}}"
+/>
+{% endblock %} {% block content %}
+
+<div class="row container">{% include "includes/predictionForm.html" %}</div>
+
+{% endblock %}

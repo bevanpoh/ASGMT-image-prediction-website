@@ -1,0 +1,167 @@
+<div class="col-8 offset-2 px-auto mx-auto text-center mt-2">
+	<p>Original Image:</p>
+	<img id="imageSrc" alt="No Image" />
+	<img id="imageSrcDisplay" alt="No Image" />
+</div>
+
+<div class="col-8 offset-2 px-auto mx-auto text-center mb-5">
+	<input type="file" name="file" id="fileInput" accept="image/*"">
+</div>
+
+<script src="{{url_for('static', filename='js/canvasInput.js')}}"></script>
+<div class="col-12 row container px-auto mx-auto text-center">
+	<p class="col-1 offset-2 mr-1">Resized Image:</p>
+	<canvas class="col-5 px-0" id="sharpenCanvas"></canvas>
+	<div class="col-4">
+		<div class="mb-3">
+			<label for="modelSelect">Select a model:</label>
+			<select name="modelSelect" id="modelSelect" required>
+				<option value="vgg_net" selected>VGGNet</option>
+				<option value="all_conv_net">All Convolutional Net</option>
+			</select>
+		</div>
+		<div class="mb-3">
+			<label for="contrastSlider">Contrast:</label>
+			<input
+				type="range"
+				name="contrastSlider"
+				id="contrastSlider"
+				min="0"
+				max="200"
+				value="100"
+				step="1"
+				list="contrastMarkers"
+				oninput="(()=>{
+			slider = document.getElementById('contrastSlider')
+			updateText('contrastValue', slider.value);
+			canvas = document.getElementById('sharpenCanvas')
+			canvas.style.filter = 'contrast(' + slider.value + '%' +')';
+			})()"
+			/>
+			<input
+				type="text"
+				id="contrastValue"
+				size="3"
+				value="100"
+				oninput=" (()=>{
+				text = document.getElementById('contrastValue');
+				updateSlider('contrastSlider', text.value);
+					})()"
+			/>
+		</div>
+		<div class="mb-3">
+			<label for="sharpenSlider">Edge Sharpen:</label>
+			<input
+				type="range"
+				name="sharpenSlider"
+				id="sharpenSlider"
+				min="0"
+				max="1.0"
+				value="0"
+				step="0.001"
+				list="sharpenMarkers"
+				oninput="(()=>{
+			slider = document.getElementById('sharpenSlider')
+			updateText('sharpenValue', slider.value);
+			displaySharpen(
+				imgMat,
+				'sharpenCanvas',
+				laplacianMat,
+				ratio=slider.value
+			);
+			})()"
+			/>
+			<input
+				type="text"
+				id="sharpenValue"
+				size="3"
+				value="0"
+				oninput=" (()=>{
+				text = document.getElementById('sharpenValue');
+				updateSlider('sharpenSlider', text.value);
+					})()"
+			/>
+		</div>
+		<div class="mb-3">
+			<input type="button" value="Submit" id="predictSubmit" />
+		</div>
+	</div>
+
+	<datalist id="sharpenMarkers">
+		<option value="0"></option>
+		<option value="0.1"></option>
+		<option value="0.2"></option>
+		<option value="0.3"></option>
+		<option value="0.4"></option>
+		<option value="0.5"></option>
+		<option value="0.6"></option>
+		<option value="0.7"></option>
+		<option value="0.8"></option>
+		<option value="0.9"></option>
+		<option value="1.0"></option>
+	</datalist>
+
+	<datalist id="contrastMarkers">
+		<option value="0"></option>
+		<option value="20"></option>
+		<option value="40"></option>
+		<option value="60"></option>
+		<option value="80"></option>
+		<option value="100"></option>
+		<option value="120"></option>
+		<option value="140"></option>
+		<option value="160"></option>
+		<option value="180"></option>
+		<option value="200"></option>
+	</datalist>
+</div>
+<div class="col-12 text-center">
+	<h2 id="result"></h2>
+</div>
+
+<script src="{{url_for('static', filename='js/canvas.js')}}"></script>
+<script>
+	var laplacianMat;
+	//https://stackoverflow.com/questions/56671436/cv-mat-is-not-a-constructor-opencv
+	cv["onRuntimeInitialized"] = function () {
+		imgMat = new cv.Mat(32, 32, cv.CV_16SC4, new cv.Scalar(0));
+		laplacianMat = new cv.Mat(32, 32, cv.CV_16SC4, new cv.Scalar(0));
+	};
+
+	let imgElement = document.getElementById("imageSrc");
+	let imgDisplayElement = document.getElementById("imageSrcDisplay");
+	let inputElement = document.getElementById("fileInput");
+	inputElement.addEventListener(
+		"change",
+		(e) => {
+			imgElement.src = URL.createObjectURL(e.target.files[0]);
+			imgDisplayElement.src = URL.createObjectURL(e.target.files[0]);
+		},
+		false
+	);
+
+	imgElement.onload = function () {
+		resizeImage("imageSrc", imgMat);
+		calculateLaplacian(imgMat, laplacianMat);
+
+		slider = document.getElementById("sharpenSlider");
+		updateSlider("sharpenSlider", slider.defaultValue);
+		updateText("sharpenValue", slider.defaultValue);
+		displaySharpen(
+			imgMat,
+			"sharpenCanvas",
+			laplacianMat,
+			(ratio = slider.defaultValue)
+		);
+
+		slider = document.getElementById("contrastSlider");
+		updateSlider("contrastSlider", slider.defaultValue);
+		updateText("contrastValue", slider.defaultValue);
+		canvas = document.getElementById("sharpenCanvas");
+		canvas.style.filter = "contrast(" + slider.value + "%" + ")";
+	};
+
+	$("#predictSubmit").click(function () {
+		submitPrediction();
+	});
+</script>

@@ -1,0 +1,17 @@
+{% extends "layout.html" %} {% block content %}
+
+<div class="row">
+	{% with messages = get_flashed_messages(with_categories=true)%}
+	{% if messages%}
+	{% for category, message in messages %}
+	<div class="alert alert-{{category}}">
+		<p>{{ message }}</p>
+	</div>
+	{% endfor %}
+	{% endif %}
+	{% endwith %}
+	<div class="col-md-6 offset-md-3">
+		{% include "includes/loginForm.html" %}
+	</div>
+</div>
+{% endblock %}

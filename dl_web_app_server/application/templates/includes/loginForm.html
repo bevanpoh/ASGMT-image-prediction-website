@@ -1,0 +1,26 @@
+<form class="p-5 m-3" name="loginForm" action="/login" method="POST">
+    <fieldset class="form-group">
+        <legend>
+            {{title}}
+        </legend> {{ form.hidden_tag() }}
+
+        <p>
+            {{ form.username.label }}<br> {{form.username(class_='form-control') }}
+            {% for error in form.username.errors %}
+            <span class="error-message">{{ error }}</span>
+            {% endfor %}
+        </p>
+
+        <p>
+            {{ form.password.label }}<br> {{ form.password(class_='form-control') }}
+            {% for error in form.password.errors %}
+            <span class="error-message"> {{ error }}</span>
+            {% endfor %}
+        </p>
+    </fieldset>
+
+    <p>
+        {{ form.submit(class_='form-control btn-primary') }}
+    </p>
+
+</form>
